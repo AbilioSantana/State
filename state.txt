@@ -1,0 +1,107 @@
+public interface IEstado
+{
+    void AdicionarCredito(MaquinaDistribuidora maquina);
+    void EscolherItem(MaquinaDistribuidora maquina);
+    void LiberarItem(MaquinaDistribuidora maquina);
+}
+
+public class MaquinaDistribuidora
+{
+    private IEstado _estadoAtual;
+
+    public MaquinaDistribuidora()
+    {
+        _estadoAtual = new EstadoSemCredito();
+    }
+
+    public void AlterarEstado(IEstado novoEstado)
+    {
+        _estadoAtual = novoEstado;
+    }
+
+    public void AdicionarCredito()
+    {
+        _estadoAtual.AdicionarCredito(this);
+    }
+
+    public void EscolherItem()
+    {
+        _estadoAtual.EscolherItem(this);
+    }
+
+    public void LiberarItem()
+    {
+        _estadoAtual.LiberarItem(this);
+    }
+}
+
+public class EstadoSemCredito : IEstado
+{
+    public void AdicionarCredito(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Crédito adicionado. Você pode selecionar um item.");
+        maquina.AlterarEstado(new EstadoComCredito());
+    }
+
+    public void EscolherItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Crédito necessário para selecionar um item.");
+    }
+
+    public void LiberarItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Sem crédito disponível.");
+    }
+}
+
+public class EstadoComCredito : IEstado
+{
+    public void AdicionarCredito(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Crédito já foi adicionado.");
+    }
+
+    public void EscolherItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Item selecionado.");
+        maquina.AlterarEstado(new EstadoItemDisponivel());
+    }
+
+    public void LiberarItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Por favor, escolha um item antes de liberar.");
+    }
+}
+
+public class EstadoItemDisponivel : IEstado
+{
+    public void AdicionarCredito(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("O crédito já foi adicionado.");
+    }
+
+    public void EscolherItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("O item já foi escolhido.");
+    }
+
+    public void LiberarItem(MaquinaDistribuidora maquina)
+    {
+        Console.WriteLine("Liberando o item...");
+        maquina.AlterarEstado(new EstadoSemCredito());
+    }
+}
+
+class Programa
+{
+    static void Main(string[] args)
+    {
+        MaquinaDistribuidora maquina = new MaquinaDistribuidora();
+
+        maquina.EscolherItem();       
+        maquina.LiberarItem();        
+        maquina.AdicionarCredito();   
+        maquina.EscolherItem();
+        maquina.LiberarItem();
+    }
+}
